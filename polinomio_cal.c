@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h> 
 #include "polinomio_cal.h"
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))		
