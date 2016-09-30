@@ -32,6 +32,7 @@ line
 	| line '\n'
 	| line asgn '\n'
 	| line expr '\n' { imprimePolinomio($2); }
+	| line error '\n' { yyerrok; }
 	;
 
 poli
@@ -66,7 +67,10 @@ termino
 expr
 	: poli 
 	| VAR {
-		if ($1->tipo == INDEF) puts("Variable indefinida");
+		if ($1->tipo == INDEF) {
+			puts("Variable indefinida");
+			$$ = (Polinomio *)malloc(sizeof(Polinomio));
+		}
 		else $$ = $1->u.poli;
 	}
 	| expr '+' expr { simplifica($1); simplifica($3); $$ = sumaPolinomio($1, $3); simplifica($$); }

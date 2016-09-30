@@ -19,7 +19,7 @@ fr [+]
 termino {ws}*[+|-]*{ws}*{number}{ws}*x[+|-]*{ws}*{number}{ws}* 
 termino1 {ws}*{number}{ws}*
 polinomio {im}{termino1}*{im} { /*return POLINOMIO ;*/}
-variable [a-zA-Z]+
+variable [a-zA-Z]+({digits}|[a-zA-Z])*
 %%
 {termino} {
 	int coefi, expo;

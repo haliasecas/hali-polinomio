@@ -91,21 +91,15 @@ NodoL *insertaOrdA(void *dato, NodoL **cab, int ( *cmp)(void *, void *)) {
 
 void imprimeL(NodoL *inicio, void ( *f)(void *, int)) {
 	NodoL *p;
-	if (!inicio) {
-		puts("imprime:lista vacia");
-		return ;
+	if (inicio) {
+		int flag = 2;
+		for (p = inicio; p->sig; p = p->sig, flag = 0) f(p->dato, flag);
+		if (flag == 2) { f(p->dato, 2); puts(""); }
+		else f(p->dato, 1);
 	}
-	int flag = 2;
-	for (p = inicio; p->sig; p = p->sig, flag = 0) f(p->dato, flag);
-	if (p && !(p->sig)) {
-		f(p->dato, 2);
-		puts("");
-	}
-	else f(p->dato, 1);
 }
 
-int igualNodoL(NodoL *cab1, NodoL *cab2,
-		int ( *cmp)(void *, void *)) {
+int igualNodoL(NodoL *cab1, NodoL *cab2, int ( *cmp)(void *, void *)) {
 	for (; cab1 && cab2; cab1 = cab1->sig,cab2 = cab2->sig) {
 		if (cmp(cab1->dato, cab2->dato)) {
 			return 0;
