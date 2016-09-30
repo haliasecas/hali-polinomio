@@ -25,9 +25,11 @@ Termino *creaTermino(int coefi, int expo) {
 
 void imprimeTermino(void *dato, int fin) {
 	Termino *t = (Termino *)dato;
-	if (fin == 0) printf("%+d x^%d ", t->coefi, t->expo);
-	else if (fin == 1) printf("%+d x^%d\n", t->coefi, t->expo);
-	else printf("%d x^%d ", t->coefi, t->expo);
+	if (t->coefi != 0) {
+		if (fin == 0) printf("%+d x^%d ", t->coefi, t->expo);
+		else if (fin == 1) printf("%+d x^%d\n", t->coefi, t->expo);
+		else printf("%d x^%d ", t->coefi, t->expo);
+	}
 }
 
 int cmpTermino(void *t1, void *t2) {
@@ -60,6 +62,12 @@ void simplifica(Polinomio *pol) {
 			Termino *cont;
 			if (p->sig) cont = (Termino *)p->sig->dato;
 			else break;
+
+			if (act->coefi == 0) {
+				if (p->sig) p = p->sig;
+				else p = 0;
+				continue;
+			}
 
 			while (act->expo == cont->expo) {
 				act->coefi += cont->coefi;

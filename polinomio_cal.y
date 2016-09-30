@@ -40,6 +40,10 @@ poli
 		$$ = creaPolinomio(0, cab, 1);
 		simplifica($$);
 	}
+	| terminos {
+		$$ = creaPolinomio(0, cab, 1);
+		simplifica($$);
+	}
 	| '-' '(' terminos ')' { 
 		$$ = creaPolinomio(0, cab, -1);
 		simplifica($$);
