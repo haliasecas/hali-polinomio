@@ -17,6 +17,15 @@ typedef struct polinomio {
 } Polinomio;
 typedef struct polinomio *PolinomioAP;
 
+typedef struct simbolo {
+	char *nombre;
+	int tipo;
+	union {
+		Polinomio *poli;
+	} u;
+	struct simbolo *sig;
+} Simbolo;
+
 NodoL *creaNodoL(void *, NodoL *);
 NodoL *insertaOrdA(void *, NodoL **, int (*)(void *, void *));
 void imprimeL(NodoL *inicio, void (*f)(void *, int));
@@ -34,3 +43,7 @@ int esIgualPolinomio(Polinomio *r, Polinomio *s);
 void imprimePolinomio(Polinomio *p);
 Polinomio *copiaPolinomio(Polinomio *r);
 //#define YYSTYPE PolinomioAP
+
+Simbolo *instalar(char *s, int t, Polinomio *p);
+Simbolo *encontrar(char *s);
+

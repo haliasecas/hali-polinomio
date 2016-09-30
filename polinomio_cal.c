@@ -5,6 +5,8 @@
 #define min(a, b) (((a) < (b)) ? (a) : (b))		
 #define max(a, b) (((a) > (b)) ? (a) : (b))
 
+Simbolo *symlist = 0;
+
 NodoL *creaNodoL(void *dato, NodoL *sig) {
 	NodoL *nvo;
 	nvo = (NodoL *)malloc(sizeof(NodoL));
@@ -208,4 +210,21 @@ Polinomio *copiaPolinomio(Polinomio *p) {
 		insertaOrdA((void *)creaTermino(tp->coefi,tp->expo), &copia, cmpTermino);
 	}
 	return creaPolinomio(p->grado, copia, 1);
+}
+
+Simbolo *encontrar(char *s) {
+	Simbolo *sp;
+	for (sp = symlist; sp != (Simbolo *)0; sp = sp->sig)
+		if (!strcmp(s, sp->nombre)) return sp;
+	return 0;
+}
+
+Simbolo *instalar(char *s, int t, Polinomio *p) {
+	Simbolo *sp = (Simbolo *)malloc(sizeof(Simbolo));
+	sp->nombre = strdup(s);
+	sp->tipo = t;
+	sp->u.poli = p;
+	sp->sig = symlist;
+	symlist = sp;
+	return sp;
 }

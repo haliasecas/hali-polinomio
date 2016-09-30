@@ -13,23 +13,25 @@ NodoL *cab;
 	NodoL *val;
 	Termino *term;
 	Polinomio *polino;
+	Simbolo *sim;
 }
+
 %token <term> TERMINO
+%token <sim> VAR INDEF
 %type <term> termino
 %type <val> terminos
-%type <polino> expr poli
+%type <polino> expr poli asgn
+
+%right '='
 %left '+' '-'
 %left '*' '/'
 %nonassoc '(' ')'
 %%
-input
-	: /* vacio */ 
-	| input line
-	;
-
 line
-	: '\n'
-	| expr '\n' { imprimePolinomio($1); }
+	: 
+	| line '\n'
+	| line asgn '\n'
+	| line expr '\n' { imprimePolinomio($2); }
 	;
 
 poli
@@ -41,6 +43,10 @@ poli
 		$$ = creaPolinomio(0, cab, -1);
 		simplifica($$);
 	}
+	;
+
+asgn
+	: VAR '=' expr { $$ = $1->u.poli = $3; $1->tipo = VAR; }
 	;
 
 terminos
@@ -59,6 +65,10 @@ termino
 
 expr
 	: poli 
+	| VAR {
+		if ($1->tipo == INDEF) puts("Variable indefinida");
+		else $$ = $1->u.poli;
+	}
 	| expr '+' expr { simplifica($1); simplifica($3); $$ = sumaPolinomio($1, $3); simplifica($$); }
 	| expr '-' expr { simplifica($1); simplifica($3); $$ = restaPolinomio($1, $3); simplifica($$); }
 	| expr '*' expr { simplifica($1); simplifica($3); $$ = multiplicaPolinomio($1, $3); simplifica($$); }
