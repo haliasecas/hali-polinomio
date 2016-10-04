@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h> 
 #include "polinomio_cal.h"
+#include "polinomio_cal.tab.h"
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))		
 #define max(a, b) (((a) > (b)) ? (a) : (b))
@@ -229,4 +230,16 @@ Simbolo *instalar(char *s, int t, Polinomio *p) {
 	sp->sig = symlist;
 	symlist = sp;
 	return sp;
+}
+
+Polinomio *binomio(Polinomio *p, int n) {
+}
+
+void init() {
+	NodoL *cab;
+	Simbolo *s;
+
+	s = instalar("BN", BLTIN, creaPolinomio(0, cab, 1));
+	s->u.f = binomio;
+
 }

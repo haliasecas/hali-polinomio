@@ -10,14 +10,16 @@ int yyerror(const char*);
 NodoL *cab;
 %}
 %union {
+	int n;
 	NodoL *val;
 	Termino *term;
 	Polinomio *polino;
 	Simbolo *sim;
 }
 
+%token <n> ENTERO
 %token <term> TERMINO
-%token <sim> VAR INDEF
+%token <sim> VAR INDEF BLTIN
 %type <term> termino
 %type <val> terminos
 %type <polino> expr poli asgn
@@ -77,6 +79,7 @@ expr
 		}
 		else $$ = $1->u.poli;
 	}
+	| BLTIN '(' expr ',' ENTERO ')' { $$ = (*($1->u.f))($3, $5); }
 	| expr '+' expr { simplifica($1); simplifica($3); $$ = sumaPolinomio($1, $3); simplifica($$); }
 	| expr '-' expr { simplifica($1); simplifica($3); $$ = restaPolinomio($1, $3); simplifica($$); }
 	| expr '*' expr { simplifica($1); simplifica($3); $$ = multiplicaPolinomio($1, $3); simplifica($$); }

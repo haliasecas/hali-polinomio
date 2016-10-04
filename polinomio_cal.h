@@ -22,6 +22,7 @@ typedef struct simbolo {
 	int tipo;
 	union {
 		Polinomio *poli;
+		Polinomio *(*f)();
 	} u;
 	struct simbolo *sig;
 } Simbolo;
@@ -46,4 +47,5 @@ Polinomio *copiaPolinomio(Polinomio *r);
 
 Simbolo *instalar(char *s, int t, Polinomio *p);
 Simbolo *encontrar(char *s);
+void init();
 

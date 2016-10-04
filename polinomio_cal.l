@@ -39,9 +39,7 @@ variable [a-zA-Z]+({digits}|[a-zA-Z])*
 }
 
 {op} |
-\n {
-	return *yytext;
-}
+\n {}
 
 . {}
 %%
