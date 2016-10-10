@@ -16,15 +16,15 @@ digits [0-9]
 number (0|[1-9]+{digits}*)
 im [i]
 fr [+]
-termino {ws}*[+|-]*{ws}*{number}{ws}*x[+|-]*{ws}*{number}{ws}* 
+termino {ws}*[+|-]*{ws}*{number}{ws}*x[+|-]*{ws}*{number}{ws}*
 termino1 {ws}*{number}{ws}*
 polinomio {im}{termino1}*{im} { /*return POLINOMIO ;*/}
 variable [a-zA-Z]+({digits}|[a-zA-Z])*
 %%
 {termino} {
 	int coefi, expo;
-	RmWs(yytext); 
-	sscanf(yytext,"%dx%d", &coefi, &expo); 
+	RmWs(yytext);
+	sscanf(yytext,"%dx%d", &coefi, &expo);
 	yylval.term = creaTermino(coefi, expo);
 	return TERMINO;
 }
@@ -39,7 +39,7 @@ variable [a-zA-Z]+({digits}|[a-zA-Z])*
 }
 
 {op} |
-\n {}
+\n { return *yytext; }
 
 . {}
 %%
