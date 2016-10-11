@@ -45,7 +45,8 @@ void imprimePolinomio(Polinomio *p);
 Polinomio *copiaPolinomio(Polinomio *r);
 //#define YYSTYPE PolinomioAP
 
-Simbolo *instalar(char *s, int t, Polinomio *p);
 Simbolo *encontrar(char *s);
+Simbolo *instalar(char *s, int t, Polinomio *p);
+Polinomio *binomio(Polinomio *p, int n);
 void init();
 

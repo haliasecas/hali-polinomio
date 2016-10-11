@@ -10,7 +10,7 @@
 %}
 /* Add your Flex definitions here */
 /* Some definitions are already provided to you*/
-op [-+*/()=]
+op [-+*/()=,]
 ws [ \t]+
 digits [0-9]
 number (0|[1-9]+{digits}*)
@@ -21,6 +21,10 @@ termino1 {ws}*{number}{ws}*
 polinomio {im}{termino1}*{im} { /*return POLINOMIO ;*/}
 variable [a-zA-Z]+({digits}|[a-zA-Z])*
 %%
+{number} {
+	yylval.n = atoi(yytext);
+	return ENTERO;
+}
 {termino} {
 	int coefi, expo;
 	RmWs(yytext);

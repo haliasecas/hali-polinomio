@@ -1,12 +1,13 @@
 #include <stdio.h>
-#include <stdlib.h> 
+#include <stdlib.h>
 #include "polinomio_cal.h"
 #include "polinomio_cal.tab.h"
 
-#define min(a, b) (((a) < (b)) ? (a) : (b))		
+#define min(a, b) (((a) < (b)) ? (a) : (b))
 #define max(a, b) (((a) > (b)) ? (a) : (b))
 
 Simbolo *symlist = 0;
+NodoL *head = 0;
 
 NodoL *creaNodoL(void *dato, NodoL *sig) {
 	NodoL *nvo;
@@ -232,14 +233,71 @@ Simbolo *instalar(char *s, int t, Polinomio *p) {
 	return sp;
 }
 
+Termino *elevaTermino(Termino *t, int n) {
+	int coef = t->coefi, tm = coef;
+	int exp = t->expo;
+	int N = n - 1;
+	while ((N--) > 0) coef = coef * tm;
+	exp = exp * n;
+	return creaTermino(coef, exp);
+}
+
+Termino *multiplicaTermino(Termino *t1, Termino *t2) {
+	return creaTermino(t1->coefi * t2->coefi, t1->expo + t2->expo);
+}
+
 Polinomio *binomio(Polinomio *p, int n) {
+	int tab[2][n + 1], cnt = 0;
+	NodoL *nvo = 0;
+	for (nvo = p->cab; nvo; nvo = nvo->sig, cnt++);
+	if (cnt != 2) return creaPolinomio(0, p->cab, 1);
+
+	Termino *ta = (Termino *)p->cab->dato;
+	Termino *tb = (Termino *)p->cab->sig->dato;
+
+	NodoL *rsp = 0;
+
+	if (n == 1) {
+		return copiaPolinomio(p);
+	}
+
+	else {
+		int i, j;
+		for (i = 0; i < n + 1; ++i) {
+			for (j = 0; j <= i; ++j) {
+				if (j == 0 || j == i) tab[i % 2][j] = 1;
+				else if ((j - 1) >= 0)
+					tab[i % 2][j] = tab[(i + 1) % 2][j] + tab[(i + 1) % 2][j - 1];
+			}
+		}
+
+		for (j = 0; j <= n; ++j) {
+			int mult = tab[(i + 1) % 2][j];
+			Termino *nvot = multiplicaTermino(elevaTermino(ta, n - j), elevaTermino(tb, j));
+			nvot->coefi = nvot->coefi * mult;
+			insertaOrdA((void *)nvot, &rsp, cmpTermino);
+		}
+	}
+
+	return creaPolinomio(0, rsp, 1);
+}
+
+Polinomio *geometrico(int n) {
+	NodoL *cab = 0;
+	int i;
+
+	for (i = 0; i <= n; ++i)
+		insertaOrdA((void *)creaTermino(1, i), &cab, cmpTermino);
+
+	return creaPolinomio(0, cab, 1);
 }
 
 void init() {
-	NodoL *cab;
 	Simbolo *s;
 
-	s = instalar("BN", BLTIN, creaPolinomio(0, cab, 1));
+	s = instalar("BN", BLTIN, creaPolinomio(0, head, 1));
 	s->u.f = binomio;
+	s = instalar("GEOM", GEOM, creaPolinomio(0, head, 1));
+	s->u.f = geometrico;
 
 }
