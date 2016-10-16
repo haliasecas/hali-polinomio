@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "polinomio_cal.h"
+#define code2(c1,c2) code(c1); code(c2);
+#define code3(c1,c2,c3) code(c1); code(c2); code(c3);
 
 int yylex(void);
 int yyerror(const char*);
@@ -13,6 +15,7 @@ NodoL *cab;
 	Termino *term;
 	Polinomio *polino;
 	Simbolo *sim;
+	Inst *inst;
 }
 
 %token <n> ENTERO
@@ -25,7 +28,6 @@ NodoL *cab;
 %right '='
 %left '+' '-'
 %left '*' '/'
-%left UNARYM
 %nonassoc '(' ')'
 %%
 line
@@ -38,15 +40,15 @@ line
 
 poli
 	: '(' terminos ')' {
-		$$ = creaPolinomio(0, cab);
+		$$ = creaPolinomio(0, cab, 1);
 		simplifica($$);
 	}
 	| terminos {
-		$$ = creaPolinomio(0, cab);
+		$$ = creaPolinomio(0, cab, 1);
 		simplifica($$);
 	}
 	| '-' '(' terminos ')' {
-		$$ = niegaPolinomio(creaPolinomio(0, cab));
+		$$ = creaPolinomio(0, cab, -1);
 		simplifica($$);
 	}
 	;
@@ -77,18 +79,6 @@ expr
 			$$ = (Polinomio *)malloc(sizeof(Polinomio));
 		}
 		else $$ = $1->u.poli;
-	}
-	| '-' VAR {
-		if ($2->tipo == INDEF) {
-			puts("Variable indefinida");
-			$$ = (Polinomio *)malloc(sizeof(Polinomio));
-		}
-		else $$ = niegaPolinomio($2->u.poli);
-	}
-	| ENTERO {
-		cab = 0;
-		insertaOrdA((void *)creaTermino($1, 0), &cab, cmpTermino);
-		$$ = creaPolinomio(0, cab);
 	}
 	| BLTIN '(' expr ',' ENTERO ')' { $$ = (*($1->u.f))($3, $5); }
 	| GEOM '(' ENTERO ')' { $$ = (*($1->u.f))($3); }

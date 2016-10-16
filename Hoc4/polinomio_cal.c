@@ -40,7 +40,7 @@ int cmpTermino(void *t1, void *t2) {
 	return tp1->expo - tp2->expo;
 }
 
-Polinomio *creaPolinomio(int grado, NodoL *cab) {
+Polinomio *creaPolinomio(int grado, NodoL *cab, int sgn) {
 	Polinomio *nvo = (Polinomio *)malloc(sizeof(Polinomio));
 	NodoL *q;
 	if (!nvo) {
@@ -51,16 +51,7 @@ Polinomio *creaPolinomio(int grado, NodoL *cab) {
 	nvo->grado = grado;
 	for (q = nvo->cab; q; q = q->sig) {
 		Termino *tr = (Termino *)q->dato;
-	}
-	return nvo;
-}
-
-Polinomio *niegaPolinomio(Polinomio *p) {
-	NodoL *q = 0;
-	Polinomio *nvo = copiaPolinomio(p);
-	for (q = nvo->cab; q; q = q->sig) {
-		Termino *tr = (Termino *)q->dato;
-		tr->coefi = -tr->coefi;
+		tr->coefi = tr->coefi * sgn;
 	}
 	return nvo;
 }
@@ -116,9 +107,6 @@ void imprimeL(NodoL *inicio, void ( *f)(void *, int)) {
 		if (flag == 2) { f(p->dato, 2); puts(""); }
 		else f(p->dato, 1);
 	}
-	else {
-		puts("0");
-	}
 }
 
 int igualNodoL(NodoL *cab1, NodoL *cab2, int ( *cmp)(void *, void *)) {
@@ -160,33 +148,37 @@ Polinomio *sumaPolinomio(Polinomio *p, Polinomio *q) {
 			insertaOrdA((void *)creaTermino(tp2->coefi,tp2->expo),
 					&suma, cmpTermino);
 	}
-	return creaPolinomio(max(p->grado,q->grado), suma);
+	return creaPolinomio(max(p->grado,q->grado), suma, 1);
 }
 
 Polinomio *restaPolinomio(Polinomio *p, Polinomio *q) {
-	NodoL *resta = 0;
-	NodoL *aux = 0;
-	NodoL *aux2 = 0;
-	Termino *tp1 = 0, *tp2 = 0;
+	NodoL *resta = NULL;
+	NodoL *aux;
+	NodoL *aux2;
+	Termino *tp1;
+	Termino *tp2;
 	for (aux = p->cab; aux; aux = aux->sig) {
 		tp1 = (Termino *)aux->dato;
-		for (aux2 = q->cab; aux2; aux2 = aux2->sig) {
+		for (aux2 = q->cab;aux2;aux2 = aux2->sig) {
 			tp2 = (Termino *)aux2->dato;
-			if ((tp1->expo == tp2->expo)) {
-				insertaOrdA((void *)creaTermino(tp1->coefi - tp2->coefi, tp1->expo), &resta, cmpTermino);
-				tp1->band = 1; tp2->band = 1;
+			if ((tp1->expo == tp2->expo) ) {
+				insertaOrdA(
+						(void *)creaTermino(tp1->coefi-tp2->coefi,tp1->expo),
+						&resta, cmpTermino);
+				tp1->band = 1;
+				tp2->band = 1;
 			}
 		}
 		if (tp1->band == 0)
-			insertaOrdA((void *)creaTermino(tp1->coefi, tp1->expo), &resta, cmpTermino);
+			insertaOrdA((void *)creaTermino(tp1->coefi,tp1->expo),
+					&resta, cmpTermino);
 	}
-	for (aux2 = q->cab; aux2; aux2 = aux2->sig) {
+	for (aux2 = q->cab;aux2;aux2 = aux2->sig) {
 		tp2 = (Termino *)aux2->dato;
 		if (tp2->band == 0)
-			insertaOrdA((void *)creaTermino(tp2->coefi, tp2->expo), &resta, cmpTermino);
+			insertaOrdA((void *)creaTermino(tp2->coefi,tp2->expo), &resta, cmpTermino);
 	}
-
-	return creaPolinomio(max(p->grado, q->grado), resta);
+	return creaPolinomio(max(p->grado,q->grado), resta, 1);
 }
 
 Polinomio *multiplicaPolinomio(Polinomio *p, Polinomio *q) {
@@ -202,7 +194,7 @@ Polinomio *multiplicaPolinomio(Polinomio *p, Polinomio *q) {
 			insertaOrdA((void *)creaTermino(tp1->coefi *tp2->coefi, tp1->expo+tp2->expo), &producto, cmpTermino);
 		}
 	}
-	return creaPolinomio(p->grado + q->grado, producto);
+	return creaPolinomio(p->grado+q->grado, producto, 1);
 }
 
 int esIgualPolinomio(Polinomio *p, Polinomio *q) {
@@ -221,7 +213,7 @@ Polinomio *copiaPolinomio(Polinomio *p) {
 		tp = (Termino *)aux->dato;
 		insertaOrdA((void *)creaTermino(tp->coefi,tp->expo), &copia, cmpTermino);
 	}
-	return creaPolinomio(p->grado, copia);
+	return creaPolinomio(p->grado, copia, 1);
 }
 
 Simbolo *encontrar(char *s) {
@@ -258,7 +250,7 @@ Polinomio *binomio(Polinomio *p, int n) {
 	int tab[2][n + 1], cnt = 0;
 	NodoL *nvo = 0;
 	for (nvo = p->cab; nvo; nvo = nvo->sig, cnt++);
-	if (cnt != 2) return creaPolinomio(p->grado, p->cab);
+	if (cnt != 2) return creaPolinomio(0, p->cab, 1);
 
 	Termino *ta = (Termino *)p->cab->dato;
 	Termino *tb = (Termino *)p->cab->sig->dato;
@@ -287,7 +279,7 @@ Polinomio *binomio(Polinomio *p, int n) {
 		}
 	}
 
-	return creaPolinomio(p->grado, rsp);
+	return creaPolinomio(0, rsp, 1);
 }
 
 Polinomio *geometrico(int n) {
@@ -297,15 +289,15 @@ Polinomio *geometrico(int n) {
 	for (i = 0; i <= n; ++i)
 		insertaOrdA((void *)creaTermino(1, i), &cab, cmpTermino);
 
-	return creaPolinomio(n, cab);
+	return creaPolinomio(0, cab, 1);
 }
 
 void init() {
 	Simbolo *s;
 
-	s = instalar("BN", BLTIN, creaPolinomio(0, head));
+	s = instalar("BN", BLTIN, creaPolinomio(0, head, 1));
 	s->u.f = binomio;
-	s = instalar("GEOM", GEOM, creaPolinomio(0, head));
+	s = instalar("GEOM", GEOM, creaPolinomio(0, head, 1));
 	s->u.f = geometrico;
 
 }

@@ -36,7 +36,7 @@ variable [a-zA-Z]+({digits}|[a-zA-Z])*
 {variable} {
 	Simbolo *sp;
 	if ((sp = encontrar(yytext)) == (Simbolo *)0)
-		sp = instalar(yytext, INDEF, creaPolinomio(0, cab));
+		sp = instalar(yytext, INDEF, creaPolinomio(0, cab, 1));
 	yylval.sim = sp;
 	if (sp->tipo == INDEF) return VAR;
 	return sp->tipo;

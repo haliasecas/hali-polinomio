@@ -34,7 +34,7 @@ int igualNodoL(NodoL *cab1, NodoL *, int (*cmp)(void *, void *));
 Termino *creaTermino(int coefi, int);
 void imprimeTermino(void *dato, int);
 int cmpTermino(void *t1, void *t2);
-Polinomio *creaPolinomio(int grado, NodoL *cab);
+Polinomio *creaPolinomio(int grado, NodoL *cab, int sgn);
 void simplifica(Polinomio *cab);
 
 Polinomio *sumaPolinomio(Polinomio *r, Polinomio *s);
@@ -43,7 +43,6 @@ Polinomio *multiplicaPolinomio(Polinomio *r, Polinomio *s);
 int esIgualPolinomio(Polinomio *r, Polinomio *s);
 void imprimePolinomio(Polinomio *p);
 Polinomio *copiaPolinomio(Polinomio *r);
-Polinomio *niegaPolinomio(Polinomio *r);
 //#define YYSTYPE PolinomioAP
 
 Simbolo *encontrar(char *s);
