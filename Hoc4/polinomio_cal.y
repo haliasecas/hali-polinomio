@@ -2,11 +2,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "polinomio_cal.h"
-#define code2(c1,c2) code(c1); code(c2);
-#define code3(c1,c2,c3) code(c1); code(c2); code(c3);
+#define code2(c1, c2) code(c1); code(c2);
+#define code3(c1, c2, c3) code(c1); code(c2); code(c3);
 
 int yylex(void);
 int yyerror(const char*);
+extern void init();
+extern void initcode();
+extern void execute(Inst *);
+extern int code(void *);
 NodoL *cab;
 %}
 %union {
@@ -18,9 +22,8 @@ NodoL *cab;
 	Inst *inst;
 }
 
-%token <n> ENTERO
 %token <term> TERMINO
-%token <sim> VAR INDEF BLTIN GEOM
+%token <sim> ENTERO VAR INDEF BLTIN GEOM
 %type <term> termino
 %type <val> terminos
 %type <polino> expr poli asgn
@@ -33,8 +36,8 @@ NodoL *cab;
 line
 	:
 	| line '\n'
-	| line asgn '\n'
-	| line expr '\n' { imprimePolinomio($2); }
+	| line asgn '\n' { code2(pop, STOP); return 1; }
+	| line expr '\n' { code2(imprime, STOP); return 1; }
 	| line error '\n' { yyerrok; }
 	;
 
@@ -54,7 +57,7 @@ poli
 	;
 
 asgn
-	: VAR '=' expr { $$ = $1->u.poli = $3; $1->tipo = VAR; }
+	: VAR '=' expr { code3(varpush, (Inst)$1, asigna); }
 	;
 
 terminos
@@ -72,24 +75,35 @@ termino
 	;
 
 expr
-	: poli
-	| VAR {
-		if ($1->tipo == INDEF) {
-			puts("Variable indefinida");
-			$$ = (Polinomio *)malloc(sizeof(Polinomio));
-		}
-		else $$ = $1->u.poli;
+	: poli {
+		simplifica($1); code2(constpush, (Inst)$1;
 	}
-	| BLTIN '(' expr ',' ENTERO ')' { $$ = (*($1->u.f))($3, $5); }
-	| GEOM '(' ENTERO ')' { $$ = (*($1->u.f))($3); }
-	| expr '+' expr { simplifica($1); simplifica($3); $$ = sumaPolinomio($1, $3); simplifica($$); }
-	| expr '-' expr { simplifica($1); simplifica($3); $$ = restaPolinomio($1, $3); simplifica($$); }
-	| expr '*' expr { simplifica($1); simplifica($3); $$ = multiplicaPolinomio($1, $3); simplifica($$); }
+	| VAR { code3(varpush, (Inst)$1, evalua); }
+	| BLTIN '(' expr ',' ENTERO ')' {
+		code2(bltin, (Inst)$1->u.f);
+	}
+	| GEOM '(' ENTERO ')' {
+		code2(bltin, (Inst)$1->u.f);
+	}
+	| expr '+' expr {
+		simplifica($1); simplifica($3);
+		code(suma);
+	}
+	| expr '-' expr {
+		simplifica($1); simplifica($3);
+		code(resta);
+	}
+	| expr '*' expr {
+		simplifica($1); simplifica($3);
+		code(multiplica);
+	}
 	;
 %%
 int main() {
 	init();
-	return yyparse();
+	for (initcode(); yyparse(); initcode())
+		execute(prog);
+	return 0;
 }
 
 int yyerror(const char* s) {

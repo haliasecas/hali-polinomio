@@ -292,6 +292,14 @@ Polinomio *geometrico(int n) {
 	return creaPolinomio(0, cab, 1);
 }
 
+#define NSTACK 256
+#define NPROG 2000
+static Datun stack[NSTACK];
+static Datun *stackp;
+
+Inst prog[NPROG];
+Inst *progp, *pc;
+
 void init() {
 	Simbolo *s;
 
@@ -299,5 +307,109 @@ void init() {
 	s->u.f = binomio;
 	s = instalar("GEOM", GEOM, creaPolinomio(0, head, 1));
 	s->u.f = geometrico;
+}
 
+void initcode() {
+	stackp = stack;
+	progp = prog;
+}
+
+void push(Datun d) {
+	if (stackp >= &stack[NSTACK])
+		puts("Desborde de pila");
+	else *(stackp++) = d;
+}
+
+Datun pop() {
+	if (stackp <= stack)
+		puts("No hay nada en la pila");
+	else return *(--stackp);
+}
+
+Inst *code(Inst f) {
+	Inst *oprogp = progp;
+	if (progp >= &prog[NPROG])
+		puts("Programa muy grande");
+	else {
+		*progp++ = f;
+		return oprogp;
+	}
+}
+
+void execute(Inst *p) {
+	for (pc = p; *pc != STOP; )
+		(*(*pc++))();
+}
+
+void constpush() {
+	Datun d;
+	Polinomio *polino = ((Polinomio *)*pc);
+	d.poli = ((Polinomio *)*pc++);
+	push(d);
+}
+
+void varpush() {
+	Datun d;
+	d.sim = (Simbolo *)(*pc++);
+	push(d);
+}
+
+void suma() {
+	Datun d1, d2;
+	d2 = pop();
+	d1 = pop();
+	d1.poli = sumaPolinomio(d1.poli, d2.poli);
+	push(d1);
+}
+
+void resta() {
+	Datun d1, d2;
+	d2 = pop();
+	d1 = pop();
+	d1.poli = restaPolinomio(d1.poli, d2.poli);
+	push(d1);
+}
+
+void multiplica() {
+	Datun d1, d2;
+	d2 = pop();
+	d1 = pop();
+	d1.poli = multiplicaPolinomio(d1.poli, d2.poli);
+	push(d1);
+}
+
+void evalua() {
+	Datun d;
+	d = pop();
+	if (d.sim->tipo == INDEF)
+		puts("Variable indefinida");
+	else {
+		d.poli = d.sim->u.poli;
+		push(d);
+	}
+}
+
+void asigna() {
+	Datun d1, d2;
+	d1 = pop();
+	d2 = pop();
+	if (d1.sim->tipo != VAR && d1.sim->tipo != INDEF)
+		puts ("Asignacion a constante");
+	d1.sim->u.poli = d2.poli;
+	d1.sim->tipo = VAR;
+	push(d2);
+}
+
+void imprime() {
+	Datun d;
+	d = pop();
+	if (d.poli) imprimePolinomio(d.poli);
+	else puts("Algo salio mal");
+}
+
+void bltin() {
+	Datun d;
+	d = pop();
+	d.poli = ((*(Polinomio *(*)())(*pc++))(*d.poli));
+	push(d);
 }
