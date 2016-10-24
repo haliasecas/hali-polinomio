@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "polinomio_cal.h"
-#define code2(c1, c2) code(c1); code(c2);
-#define code3(c1, c2, c3) code(c1); code(c2); code(c3);
+
+#define code2(c1,c2) code(c1); code(c2);
+#define code3(c1,c2,c3) code(c1); code(c2); code(c3);
 
 int yylex(void);
 int yyerror(const char*);
@@ -76,7 +77,7 @@ termino
 
 expr
 	: poli {
-		simplifica($1); code2(constpush, (Inst)$1;
+		simplifica($1); code2(constpush, (Inst)$1);
 	}
 	| VAR { code3(varpush, (Inst)$1, evalua); }
 	| BLTIN '(' expr ',' ENTERO ')' {
