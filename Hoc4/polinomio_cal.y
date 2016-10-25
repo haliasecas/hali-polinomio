@@ -4,6 +4,7 @@
 #include "polinomio_cal.h"
 #define code2(c1, c2) code(c1); code(c2);
 #define code3(c1, c2, c3) code(c1); code(c2); code(c3);
+//#define TEST
 
 int yylex(void);
 int yyerror(const char*);
@@ -36,8 +37,20 @@ NodoL *cab;
 line
 	:
 	| line '\n'
-	| line asgn '\n' { code2(pop1, STOP); return 1; }
-	| line expr '\n' { code2(imprime, STOP); return 1; }
+	| line asgn '\n' {
+		code2(pop1, STOP);
+		#ifdef TEST
+			puts("POP1"); puts("STOP");
+		#endif
+		return 1;
+	}
+	| line expr '\n' {
+		code2(imprime, STOP);
+		#ifdef TEST
+			puts("IMPRIME"); puts("STOP");
+		#endif
+		return 1;
+	}
 	| line error '\n' { yyerrok; }
 	;
 
@@ -53,7 +66,12 @@ poli
 	;
 
 asgn
-	: VAR '=' expr { code3(varpush, (Inst)$1, asigna); }
+	: VAR '=' expr {
+		code3(varpush, (Inst)$1, asigna);
+		#ifdef TEST
+			puts("VARPUSH"); puts("$1"); puts("ASIGNA");
+		#endif
+	}
 	;
 
 terminos
@@ -72,20 +90,53 @@ termino
 
 expr
 	: poli {
-		simplifica($1); code2(constpush, (Inst)$1);
+		simplifica($1);
+		code2(constpush, (Inst)$1);
+		#ifdef TEST
+			puts("CONSTPUSH"); puts("$1");
+		#endif
 	}
-	| VAR { code3(varpush, (Inst)$1, evalua); }
+	| VAR {
+		code3(varpush, (Inst)$1, evalua);
+		#ifdef TEST
+			puts("VARPUSH"); puts("$1"); puts("EVALUA");
+		#endif
+	}
 	| BLTIN '(' expr ',' expr ')' {
 		code2(bltin2, (Inst)$1->u.f1);
+		#ifdef TEST
+			puts("BLTIN2"); puts("INST$1");
+		#endif
 	}
 	| GEOM '(' expr ')' {
 		code2(bltin1, (Inst)$1->u.f1);
+		#ifdef TEST
+			puts("BLTIN1"); puts("INST$1");
+		#endif
 	}
-	| expr '+' expr { code(suma); }
-	| expr '-' expr { code(resta); }
-	| expr '*' expr { code(multiplica); }
+	| expr '+' expr {
+		code(suma);
+		#ifdef TEST
+			puts("SUMA");
+		#endif
+	}
+	| expr '-' expr {
+		code(resta);
+		#ifdef TEST
+			puts("RESTA");
+		#endif
+	}
+	| expr '*' expr {
+		code(multiplica);
+		#ifdef TEST
+			puts("MULTIPLICA");
+		#endif
+	}
 	| '-' expr %prec UM {
 		code(niega);
+		#ifdef TEST
+			puts("NIEGA");
+		#endif
 	}
 	;
 %%
@@ -93,6 +144,7 @@ int main() {
 	init();
 	for (initcode(); yyparse(); initcode())
 		execute(prog);
+
 	return 0;
 }
 

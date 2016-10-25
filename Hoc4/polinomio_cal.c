@@ -169,26 +169,22 @@ Polinomio *restaPolinomio(Polinomio *p, Polinomio *q) {
 	Termino *tp2;
 	for (aux = p->cab; aux; aux = aux->sig) {
 		tp1 = (Termino *)aux->dato;
-		for (aux2 = q->cab;aux2;aux2 = aux2->sig) {
+		for (aux2 = q->cab; aux2; aux2 = aux2->sig) {
 			tp2 = (Termino *)aux2->dato;
 			if ((tp1->expo == tp2->expo) ) {
-				insertaOrdA(
-						(void *)creaTermino(tp1->coefi-tp2->coefi,tp1->expo),
-						&resta, cmpTermino);
-				tp1->band = 1;
-				tp2->band = 1;
+				insertaOrdA((void *)creaTermino(tp1->coefi - tp2->coefi, tp1->expo), &resta, cmpTermino);
+				tp1->band = 1; tp2->band = 1;
 			}
 		}
 		if (tp1->band == 0)
-			insertaOrdA((void *)creaTermino(tp1->coefi,tp1->expo),
-					&resta, cmpTermino);
+			insertaOrdA((void *)creaTermino(tp1->coefi, tp1->expo), &resta, cmpTermino);
 	}
 	for (aux2 = q->cab;aux2;aux2 = aux2->sig) {
 		tp2 = (Termino *)aux2->dato;
 		if (tp2->band == 0)
-			insertaOrdA((void *)creaTermino(tp2->coefi,tp2->expo), &resta, cmpTermino);
+			insertaOrdA((void *)creaTermino(-tp2->coefi, tp2->expo), &resta, cmpTermino);
 	}
-	return creaPolinomio(max(p->grado,q->grado), resta, 1);
+	return creaPolinomio(max(p->grado, q->grado), resta, 1);
 }
 
 Polinomio *multiplicaPolinomio(Polinomio *p, Polinomio *q) {

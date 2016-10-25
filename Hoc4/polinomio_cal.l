@@ -1,6 +1,6 @@
 %option noyywrap
 %{
-	#define TEST
+	//#define TEST
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include "polinomio_cal.h"
