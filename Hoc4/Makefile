@@ -14,5 +14,5 @@ lex.yy.c: polinomio_cal.l
 	@flex polinomio_cal.l
 
 clean:
-	@rm -f *.out lex.yy.c *.tab.* Polinomio
+	@rm -f *.out lex.yy.c Polinomio
 	@echo Limpio

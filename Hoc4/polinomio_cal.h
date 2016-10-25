@@ -57,6 +57,7 @@ Polinomio *binomio(Polinomio *, Polinomio *);
 void init();
 
 extern Datun pop();
+extern void pop1();
 typedef int (*Inst)();
 #define STOP (Inst) 0
 

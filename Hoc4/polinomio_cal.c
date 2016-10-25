@@ -257,7 +257,7 @@ Termino *multiplicaTermino(Termino *t1, Termino *t2) {
 }
 
 Polinomio *binomio(Polinomio *p, Polinomio *d) {
-	Termino *ter = (Termino *)(d->cab);
+	Termino *ter = (Termino *)(d->cab->dato);
 	NodoL *nvo = 0;
 	if (!ter) return creaPolinomio(0, nvo, 1);
 	int n = ter->coefi;
@@ -298,8 +298,11 @@ Polinomio *binomio(Polinomio *p, Polinomio *d) {
 Polinomio *geometrico(Polinomio *poli) {
 	NodoL *cab = 0;
 	int i;
-	Termino *term = (Termino *)(poli->cab);
-	if (!term) return creaPolinomio(0, cab, 1);
+	Termino *term = (Termino *)(poli->cab->dato);
+	if (!term) {
+		puts("Error");
+		return creaPolinomio(0, cab, 1);
+	}
 
 	int n = term->coefi;
 	for (i = 0; i <= n; ++i)
@@ -340,6 +343,12 @@ Datun pop() {
 	if (stackp < stack)
 		puts("No hay nada en la pila");
 	else return *(--stackp);
+}
+
+void pop1() {
+	if (stackp < stack)
+		puts("No hay nada en la pila");
+	else --stackp;
 }
 
 Inst *code(Inst f) {
@@ -426,7 +435,15 @@ void imprime() {
 void bltin1() {
 	Datun d;
 	d = pop();
-	d.poli = ((Polinomio *(*)())(pc++))(d.poli);
+	d.poli = ((Polinomio *(*)())(pc))(d.poli);
+	pc = pc + 1;
+	push(d);
+}
+
+void bltin2() {
+	Datun d;
+	d = pop();
+	puts("Por que aqui");
 	push(d);
 }
 

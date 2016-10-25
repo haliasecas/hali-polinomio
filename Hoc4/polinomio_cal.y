@@ -36,7 +36,7 @@ NodoL *cab;
 line
 	:
 	| line '\n'
-	| line asgn '\n' { code2(pop, STOP); return 1; }
+	| line asgn '\n' { code2(pop1, STOP); return 1; }
 	| line expr '\n' { code2(imprime, STOP); return 1; }
 	| line error '\n' { yyerrok; }
 	;
@@ -76,7 +76,7 @@ expr
 	}
 	| VAR { code3(varpush, (Inst)$1, evalua); }
 	| BLTIN '(' expr ',' expr ')' {
-		code2(bltin1, (Inst)$1->u.f1);
+		code2(bltin2, (Inst)$1->u.f1);
 	}
 	| GEOM '(' expr ')' {
 		code2(bltin1, (Inst)$1->u.f1);

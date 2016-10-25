@@ -1,6 +1,6 @@
 %option noyywrap
 %{
-	//#define TEST
+	#define TEST
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include "polinomio_cal.h"
@@ -49,16 +49,21 @@ variable [a-zA-Z]+({digits}|[a-zA-Z])*
 	if ((sp = encontrar(yytext)) == (Simbolo *)0)
 		sp = instalar(yytext, INDEF, creaPolinomio(0, cab, 1));
 	yylval.sim = sp;
+	#ifdef TEST
+		if (!strcmp(sp->nombre, "GEOM")) {
+			printf("Token = GEOM Tipo = (%d) f1 = (%p)\n", sp->tipo, sp->u.f1);
+		}
+	#endif
 	if (sp->tipo == INDEF) return VAR;
 	return sp->tipo;
 }
 
 {op} {
-	#ifdef TEST
-		printf("Op (%s)\n", yytext);
-	#endif
+#ifdef TEST
+	printf("Op (%s)\n", yytext);
+#endif
 	return *yytext;
-}
+	 }
 \n { return *yytext; }
 
 . {}
