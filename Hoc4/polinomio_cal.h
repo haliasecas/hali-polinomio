@@ -22,7 +22,8 @@ typedef struct simbolo {
 	int tipo;
 	union {
 		Polinomio *poli;
-		Polinomio *(*f)();
+		Polinomio *(*f1)(Polinomio *);
+		Polinomio *(*f2)(Polinomio *, Polinomio *);
 	} u;
 	struct simbolo *sig;
 } Simbolo;
@@ -52,7 +53,7 @@ Polinomio *copiaPolinomio(Polinomio *r);
 
 Simbolo *encontrar(char *s);
 Simbolo *instalar(char *s, int t, Polinomio *p);
-Polinomio *binomio(Polinomio *p, int n);
+Polinomio *binomio(Polinomio *, Polinomio *);
 void init();
 
 extern Datun pop();
@@ -62,5 +63,5 @@ typedef int (*Inst)();
 extern Inst prog[];
 extern void evalua(), suma(), resta(), multiplica();
 extern void niega(), power();
-extern void asigna(), bltin(), imprime();
-extern void constpush(), varpush();
+extern void asigna(), bltin1(), imprime();
+extern void constpush(), varpush(), bltin2();

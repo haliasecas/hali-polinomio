@@ -256,9 +256,12 @@ Termino *multiplicaTermino(Termino *t1, Termino *t2) {
 	return creaTermino(t1->coefi * t2->coefi, t1->expo + t2->expo);
 }
 
-Polinomio *binomio(Polinomio *p, int n) {
-	int tab[2][n + 1], cnt = 0;
+Polinomio *binomio(Polinomio *p, Polinomio *d) {
+	Termino *ter = (Termino *)(d->cab);
 	NodoL *nvo = 0;
+	if (!ter) return creaPolinomio(0, nvo, 1);
+	int n = ter->coefi;
+	int tab[2][n + 1], cnt = 0;
 	for (nvo = p->cab; nvo; nvo = nvo->sig, cnt++);
 	if (cnt != 2) return creaPolinomio(0, p->cab, 1);
 
@@ -317,9 +320,9 @@ void init() {
 	Simbolo *s;
 
 	s = instalar("BN", BLTIN, creaPolinomio(0, head, 1));
-	s->u.f = binomio;
+	s->u.f2 = binomio;
 	s = instalar("GEOM", GEOM, creaPolinomio(0, head, 1));
-	s->u.f = geometrico;
+	s->u.f1 = geometrico;
 }
 
 void initcode() {
@@ -420,10 +423,10 @@ void imprime() {
 	else puts("Algo salio mal");
 }
 
-void bltin() {
+void bltin1() {
 	Datun d;
 	d = pop();
-
+	d.poli = ((Polinomio *(*)())(pc++))(d.poli);
 	push(d);
 }
 

@@ -76,10 +76,10 @@ expr
 	}
 	| VAR { code3(varpush, (Inst)$1, evalua); }
 	| BLTIN '(' expr ',' expr ')' {
-		code2(bltin, (Inst)$1->u.f);
+		code2(bltin1, (Inst)$1->u.f1);
 	}
 	| GEOM '(' expr ')' {
-		code2(bltin, (Inst)$1->u.f);
+		code2(bltin1, (Inst)$1->u.f1);
 	}
 	| expr '+' expr { code(suma); }
 	| expr '-' expr { code(resta); }
