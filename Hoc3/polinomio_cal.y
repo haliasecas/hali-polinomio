@@ -52,7 +52,7 @@ poli
 	;
 
 asgn
-	: VAR '=' expr { $$ = $1->u.poli = $3; $1->tipo = VAR; }
+	: VAR '=' expr { simplifica($3); $$ = $1->u.poli = $3; $1->tipo = VAR; }
 	;
 
 terminos
