@@ -61,6 +61,6 @@ typedef int (*Inst)();
 
 extern Inst prog[];
 extern void evalua(), suma(), resta(), multiplica();
-extern void negate(), power();
+extern void niega(), power();
 extern void asigna(), bltin(), imprime();
 extern void constpush(), varpush();

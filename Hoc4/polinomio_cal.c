@@ -25,6 +25,16 @@ Termino *creaTermino(int coefi, int expo) {
 	return nvo;
 }
 
+Polinomio *niegaPolinomio(Polinomio *p) {
+	NodoL *q = 0;
+	Polinomio *nvo = copiaPolinomio(p);
+	for (q = nvo->cab; q; q = q->sig) {
+		Termino *tr = (Termino *)q->dato;
+		tr->coefi = -tr->coefi;
+	}
+	return nvo;
+}
+
 void imprimeTermino(void *dato, int fin) {
 	Termino *t = (Termino *)dato;
 	if (t->coefi != 0) {
@@ -282,10 +292,13 @@ Polinomio *binomio(Polinomio *p, int n) {
 	return creaPolinomio(0, rsp, 1);
 }
 
-Polinomio *geometrico(int n) {
+Polinomio *geometrico(Polinomio *poli) {
 	NodoL *cab = 0;
 	int i;
+	Termino *term = (Termino *)(poli->cab);
+	if (!term) return creaPolinomio(0, cab, 1);
 
+	int n = term->coefi;
 	for (i = 0; i <= n; ++i)
 		insertaOrdA((void *)creaTermino(1, i), &cab, cmpTermino);
 
@@ -321,7 +334,7 @@ void push(Datun d) {
 }
 
 Datun pop() {
-	if (stackp <= stack)
+	if (stackp < stack)
 		puts("No hay nada en la pila");
 	else return *(--stackp);
 }
@@ -410,6 +423,13 @@ void imprime() {
 void bltin() {
 	Datun d;
 	d = pop();
-	d.poli = ((*(Polinomio *(*)())(*pc++))(*d.poli));
+
+	push(d);
+}
+
+void niega() {
+	Datun d;
+	d = pop();
+	d.poli = niegaPolinomio(d.poli);
 	push(d);
 }

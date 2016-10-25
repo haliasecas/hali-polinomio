@@ -1,5 +1,6 @@
 %option noyywrap
 %{
+	//#define TEST
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include "polinomio_cal.h"
@@ -22,12 +23,19 @@ polinomio {im}{termino1}*{im} { /*return POLINOMIO ;*/}
 variable [a-zA-Z]+({digits}|[a-zA-Z])*
 %%
 {number} {
-	yylval.n = atoi(yytext);
-	return ENTERO;
+	RmWs(yytext);
+	yylval.term = creaTermino(atoi(yytext), 0);
+	#ifdef TEST
+		printf("Num (%s)\n", yytext);
+	#endif
+	return TERMINO;
 }
 {termino} {
 	int coefi, expo;
 	RmWs(yytext);
+	#ifdef TEST
+		printf("Term (%s)\n", yytext);
+	#endif
 	sscanf(yytext,"%dx%d", &coefi, &expo);
 	yylval.term = creaTermino(coefi, expo);
 	return TERMINO;
@@ -35,6 +43,9 @@ variable [a-zA-Z]+({digits}|[a-zA-Z])*
 
 {variable} {
 	Simbolo *sp;
+	#ifdef TEST
+		printf("Var (%s)\n", yytext);
+	#endif
 	if ((sp = encontrar(yytext)) == (Simbolo *)0)
 		sp = instalar(yytext, INDEF, creaPolinomio(0, cab, 1));
 	yylval.sim = sp;
@@ -42,7 +53,12 @@ variable [a-zA-Z]+({digits}|[a-zA-Z])*
 	return sp->tipo;
 }
 
-{op} |
+{op} {
+	#ifdef TEST
+		printf("Op (%s)\n", yytext);
+	#endif
+	return *yytext;
+}
 \n { return *yytext; }
 
 . {}

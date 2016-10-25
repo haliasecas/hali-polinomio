@@ -2,9 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "polinomio_cal.h"
-
-#define code2(c1,c2) code(c1); code(c2);
-#define code3(c1,c2,c3) code(c1); code(c2); code(c3);
+#define code2(c1, c2) code(c1); code(c2);
+#define code3(c1, c2, c3) code(c1); code(c2); code(c3);
 
 int yylex(void);
 int yyerror(const char*);
@@ -15,7 +14,6 @@ extern int code(void *);
 NodoL *cab;
 %}
 %union {
-	int n;
 	NodoL *val;
 	Termino *term;
 	Polinomio *polino;
@@ -24,7 +22,7 @@ NodoL *cab;
 }
 
 %token <term> TERMINO
-%token <sim> ENTERO VAR INDEF BLTIN GEOM
+%token <sim> VAR INDEF BLTIN GEOM
 %type <term> termino
 %type <val> terminos
 %type <polino> expr poli asgn
@@ -32,6 +30,7 @@ NodoL *cab;
 %right '='
 %left '+' '-'
 %left '*' '/'
+%left UM
 %nonassoc '(' ')'
 %%
 line
@@ -49,10 +48,6 @@ poli
 	}
 	| terminos {
 		$$ = creaPolinomio(0, cab, 1);
-		simplifica($$);
-	}
-	| '-' '(' terminos ')' {
-		$$ = creaPolinomio(0, cab, -1);
 		simplifica($$);
 	}
 	;
@@ -80,23 +75,17 @@ expr
 		simplifica($1); code2(constpush, (Inst)$1);
 	}
 	| VAR { code3(varpush, (Inst)$1, evalua); }
-	| BLTIN '(' expr ',' ENTERO ')' {
+	| BLTIN '(' expr ',' expr ')' {
 		code2(bltin, (Inst)$1->u.f);
 	}
-	| GEOM '(' ENTERO ')' {
+	| GEOM '(' expr ')' {
 		code2(bltin, (Inst)$1->u.f);
 	}
-	| expr '+' expr {
-		simplifica($1); simplifica($3);
-		code(suma);
-	}
-	| expr '-' expr {
-		simplifica($1); simplifica($3);
-		code(resta);
-	}
-	| expr '*' expr {
-		simplifica($1); simplifica($3);
-		code(multiplica);
+	| expr '+' expr { code(suma); }
+	| expr '-' expr { code(resta); }
+	| expr '*' expr { code(multiplica); }
+	| '-' expr %prec UM {
+		code(niega);
 	}
 	;
 %%
