@@ -318,9 +318,9 @@ Inst *progp, *pc;
 void init() {
 	Simbolo *s;
 
-	s = instalar("BN", BLTIN, creaPolinomio(0, head, 1));
+	s = instalar("BN", BLTIN2, creaPolinomio(0, head, 1));
 	s->u.f2 = binomio;
-	s = instalar("GEOM", GEOM, creaPolinomio(0, head, 1));
+	s = instalar("GEOM", BLTIN1, creaPolinomio(0, head, 1));
 	s->u.f1 = geometrico;
 }
 
@@ -431,16 +431,18 @@ void imprime() {
 void bltin1() {
 	Datun d;
 	d = pop();
-	d.poli = ((Polinomio *(*)())(pc))(d.poli);
-	pc = pc + 1;
+	Simbolo *fun = (Simbolo *)(*pc++);
+	d.poli = (fun->u.f1)(d.poli);
 	push(d);
 }
 
 void bltin2() {
-	Datun d;
-	d = pop();
-	puts("Por que aqui");
-	push(d);
+	Datun d1, d2;
+	d2 = pop();
+	d1 = pop();
+	Simbolo *fun = (Simbolo *)(*pc++);
+	d1.poli = (fun->u.f2)(d1.poli, d2.poli);
+	push(d1);
 }
 
 void niega() {

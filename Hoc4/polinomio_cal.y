@@ -23,7 +23,8 @@ NodoL *cab;
 }
 
 %token <term> TERMINO
-%token <sim> VAR INDEF BLTIN GEOM
+%token <sim> VAR INDEF BLTIN1
+%token <sim> BLTIN2
 %type <term> termino
 %type <val> terminos
 %type <polino> expr poli asgn
@@ -38,7 +39,7 @@ line
 	:
 	| line '\n'
 	| line asgn '\n' {
-		code2(pop1, STOP);
+		code2(pop, STOP);
 		#ifdef TEST
 			puts("POP1"); puts("STOP");
 		#endif
@@ -102,14 +103,14 @@ expr
 			puts("VARPUSH"); puts("$1"); puts("EVALUA");
 		#endif
 	}
-	| BLTIN '(' expr ',' expr ')' {
-		code2(bltin2, (Inst)$1->u.f1);
+	| BLTIN2 '(' expr ',' expr ')' {
+		code2(bltin2, (Inst)$1);
 		#ifdef TEST
 			puts("BLTIN2"); puts("INST$1");
 		#endif
 	}
-	| GEOM '(' expr ')' {
-		code2(bltin1, (Inst)$1->u.f1);
+	| BLTIN1 '(' expr ')' {
+		code2(bltin1, (Inst)$1);
 		#ifdef TEST
 			puts("BLTIN1"); puts("INST$1");
 		#endif
