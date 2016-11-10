@@ -107,12 +107,22 @@ stmtlist
 expr
 	: poli { simplifica($1); $$ = code2(constpush, (Inst)$1); }
 	| VAR { $$ = code3(varpush, (Inst)$1, evalua); }
-	| BLTIN2 '(' expr ',' expr ')' { code2(bltin2, (Inst)$1); }
-	| BLTIN1 '(' expr ')' { code2(bltin1, (Inst)$1); }
+	| asgn
+	| BLTIN2 '(' expr ',' expr ')' { $$ = $3; code2(bltin2, (Inst)$1); }
+	| BLTIN1 '(' expr ')' { $$ = $3; code2(bltin1, (Inst)$1); }
 	| expr '+' expr { code(suma); }
 	| expr '-' expr { code(resta); }
 	| expr '*' expr { code(multiplica); }
 	| '-' expr %prec UM { code(niega); }
+	| expr GT expr { code(gt); }
+	| expr GE expr { code(ge); }
+	| expr LT expr { code(lt); }
+	| expr LE expr { code(le); }
+	| expr EQ expr { code(eq); }
+	| expr NE expr { code(ne); }
+	| expr AND expr { code(and); }
+	| expr OR expr { code(or); }
+	| NOT expr { $$ = $2; code(not); }
 	;
 %%
 int main() {
