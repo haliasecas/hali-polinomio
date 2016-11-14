@@ -49,6 +49,7 @@ Polinomio *multiplicaPolinomio(Polinomio *r, Polinomio *s);
 int esIgualPolinomio(Polinomio *r, Polinomio *s);
 void imprimePolinomio(Polinomio *p);
 Polinomio *copiaPolinomio(Polinomio *r);
+Polinomio *deriva(Polinomio *);
 //#define YYSTYPE PolinomioAP
 
 Simbolo *encontrar(char *s);

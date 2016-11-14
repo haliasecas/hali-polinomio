@@ -42,6 +42,7 @@ void imprimeTermino(void *dato, int fin) {
 		else if (fin == 1) printf("%+d x^%d\n", t->coefi, t->expo);
 		else printf("%d x^%d ", t->coefi, t->expo);
 	}
+	else if (fin == 1) printf("+0\n");
 }
 
 int cmpTermino(void *t1, void *t2) {
@@ -63,6 +64,8 @@ Polinomio *creaPolinomio(int grado, NodoL *cab, int sgn) {
 		Termino *tr = (Termino *)q->dato;
 		tr->coefi = tr->coefi * sgn;
 	}
+
+	simplifica(nvo);
 	return nvo;
 }
 
@@ -116,6 +119,9 @@ void imprimeL(NodoL *inicio, void ( *f)(void *, int)) {
 		for (p = inicio; p->sig; p = p->sig, flag = 0) f(p->dato, flag);
 		if (flag == 2) { f(p->dato, 2); puts(""); }
 		else f(p->dato, 1);
+	}
+	else {
+		puts("0");
 	}
 }
 
@@ -208,6 +214,7 @@ int esIgualPolinomio(Polinomio *p, Polinomio *q) {
 }
 
 void imprimePolinomio(Polinomio *p) {
+	simplifica(p);
 	imprimeL(p->cab, imprimeTermino);
 }
 
@@ -304,7 +311,25 @@ Polinomio *geometrico(Polinomio *poli) {
 	for (i = 0; i <= n; ++i)
 		insertaOrdA((void *)creaTermino(1, i), &cab, cmpTermino);
 
-	return creaPolinomio(0, cab, 1);
+	return creaPolinomio(i - 1, cab, 1);
+}
+
+Polinomio *deriva(Polinomio *poli) {
+	NodoL *cab = 0;
+	NodoL *p = 0;
+	int coef, expo;
+
+	for (p = poli->cab; p; p = p->sig) {
+		Termino *ter = (Termino *)p->dato;
+		coef = ter->coefi * ter->expo;
+		expo = ter->expo - 1;
+		if (ter->expo > 0) insertaOrdA((void *)creaTermino(coef, expo), &cab, cmpTermino);
+	}
+
+	Polinomio *rtn = creaPolinomio(expo, cab, 1);
+	simplifica(rtn);
+
+	return rtn;
 }
 
 #define NSTACK 256
@@ -322,6 +347,8 @@ void init() {
 	s->u.f2 = binomio;
 	s = instalar("GEOM", BLTIN1, creaPolinomio(0, head, 1));
 	s->u.f1 = geometrico;
+	s = instalar("DER", BLTIN1, creaPolinomio(0, head, 1));
+	s->u.f1 = deriva;
 }
 
 void initcode() {
