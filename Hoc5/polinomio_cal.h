@@ -61,8 +61,12 @@ extern void pop1();
 typedef int (*Inst)();
 #define STOP (Inst) 0
 
-extern Inst prog[];
+extern Inst prog[], *progp;
 extern void evalua(), suma(), resta(), multiplica();
 extern void niega(), power();
 extern void asigna(), bltin1(), imprime();
+extern void prexpr();
 extern void constpush(), varpush(), bltin2();
+extern void gt(), lt(), eq(), ge();
+extern void le(), ne(), and(), or(), not();
+extern void ifcode(), whilecode();

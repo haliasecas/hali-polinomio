@@ -5,11 +5,10 @@
 	#include "polinomio_cal.h"
 	#include "polinomio_cal.tab.h"
 	void RmWs(char* str);
+	int follow(char, int, int);
 	extern YYSTYPE yylval;
 	NodoL *cab = 0;
 %}
-/* Add your Flex definitions here */
-/* Some definitions are already provided to you*/
 op [-+*/()=,]
 ws [ \t]+
 digits [0-9]
@@ -44,9 +43,8 @@ variable [a-zA-Z]+({digits}|[a-zA-Z])*
 {op} {
 	return *yytext;
 }
-'<' {
-	puts("Holi");
-	return *yytext;
+'>' {
+	return follow('=', GE, GT);
 }
 \n { return *yytext; }
 . {}
@@ -65,3 +63,10 @@ void RmWs(char* str) {
 	str[j] = '\0';
 }
 
+int follow(char ex, int ify, int ifn) {
+	int c = getchar();
+	if (c == ex)
+		return ify;
+	ungetc(c, stdin);
+	return ifn;
+}

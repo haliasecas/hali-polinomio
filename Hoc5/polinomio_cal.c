@@ -478,3 +478,10 @@ void niega() {
 	d.poli = niegaPolinomio(d.poli);
 	push(d);
 }
+
+void gt() {
+	Datun d1, d2;
+	d2 = pop();
+	d1 = pop();
+	push(d1);
+}
