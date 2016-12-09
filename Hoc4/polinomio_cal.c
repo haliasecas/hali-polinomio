@@ -71,10 +71,12 @@ Polinomio *creaPolinomio(int grado, NodoL *cab, int sgn) {
 
 void simplifica(Polinomio *pol) {
 	NodoL *p, *q, *head = pol->cab;
+	int maxgrad = 0;
 	if (pol) {
 		for (p = pol->cab; p; p = p->sig) {
 			Termino *act = (Termino *)p->dato;
 			Termino *cont;
+			maxgrad = max(maxgrad, act->expo);
 			if (p->sig) cont = (Termino *)p->sig->dato;
 			else break;
 
@@ -93,6 +95,7 @@ void simplifica(Polinomio *pol) {
 		}
 	}
 	pol->cab = head;
+	pol->grado = maxgrad;
 }
 
 NodoL *insertaOrdA(void *dato, NodoL **cab, int ( *cmp)(void *, void *)) {
@@ -216,6 +219,7 @@ int esIgualPolinomio(Polinomio *p, Polinomio *q) {
 void imprimePolinomio(Polinomio *p) {
 	simplifica(p);
 	imprimeL(p->cab, imprimeTermino);
+	printf("Grado: %d\n", p->grado);
 }
 
 Polinomio *copiaPolinomio(Polinomio *p) {

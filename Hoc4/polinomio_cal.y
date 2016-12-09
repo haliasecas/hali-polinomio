@@ -40,16 +40,10 @@ line
 	| line '\n'
 	| line asgn '\n' {
 		code2(pop, STOP);
-		#ifdef TEST
-			puts("POP1"); puts("STOP");
-		#endif
 		return 1;
 	}
 	| line expr '\n' {
 		code2(imprime, STOP);
-		#ifdef TEST
-			puts("IMPRIME"); puts("STOP");
-		#endif
 		return 1;
 	}
 	| line error '\n' { yyerrok; }
@@ -69,9 +63,6 @@ poli
 asgn
 	: VAR '=' expr {
 		code3(varpush, (Inst)$1, asigna);
-		#ifdef TEST
-			puts("VARPUSH"); puts("$1"); puts("ASIGNA");
-		#endif
 	}
 	;
 
@@ -93,51 +84,27 @@ expr
 	: poli {
 		simplifica($1);
 		code2(constpush, (Inst)$1);
-		#ifdef TEST
-			puts("CONSTPUSH"); puts("$1");
-		#endif
 	}
 	| VAR {
 		code3(varpush, (Inst)$1, evalua);
-		#ifdef TEST
-			puts("VARPUSH"); puts("$1"); puts("EVALUA");
-		#endif
 	}
 	| BLTIN2 '(' expr ',' expr ')' {
 		code2(bltin2, (Inst)$1);
-		#ifdef TEST
-			puts("BLTIN2"); puts("INST$1");
-		#endif
 	}
 	| BLTIN1 '(' expr ')' {
 		code2(bltin1, (Inst)$1);
-		#ifdef TEST
-			puts("BLTIN1"); puts("INST$1");
-		#endif
 	}
 	| expr '+' expr {
 		code(suma);
-		#ifdef TEST
-			puts("SUMA");
-		#endif
 	}
 	| expr '-' expr {
 		code(resta);
-		#ifdef TEST
-			puts("RESTA");
-		#endif
 	}
 	| expr '*' expr {
 		code(multiplica);
-		#ifdef TEST
-			puts("MULTIPLICA");
-		#endif
 	}
 	| '-' expr %prec UM {
 		code(niega);
-		#ifdef TEST
-			puts("NIEGA");
-		#endif
 	}
 	;
 %%
