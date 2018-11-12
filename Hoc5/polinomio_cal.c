@@ -71,10 +71,12 @@ Polinomio *creaPolinomio(int grado, NodoL *cab, int sgn) {
 
 void simplifica(Polinomio *pol) {
 	NodoL *p, *q, *head = pol->cab;
+	int maxgrad = 0;
 	if (pol) {
 		for (p = pol->cab; p; p = p->sig) {
 			Termino *act = (Termino *)p->dato;
 			Termino *cont;
+			maxgrad = max(maxgrad, act->expo);
 			if (p->sig) cont = (Termino *)p->sig->dato;
 			else break;
 
@@ -92,6 +94,7 @@ void simplifica(Polinomio *pol) {
 			}
 		}
 	}
+	pol->grado = maxgrad;
 	pol->cab = head;
 }
 
@@ -206,7 +209,7 @@ Polinomio *multiplicaPolinomio(Polinomio *p, Polinomio *q) {
 			insertaOrdA((void *)creaTermino(tp1->coefi *tp2->coefi, tp1->expo+tp2->expo), &producto, cmpTermino);
 		}
 	}
-	return creaPolinomio(p->grado+q->grado, producto, 1);
+	return creaPolinomio(p->grado + q->grado, producto, 1);
 }
 
 int esIgualPolinomio(Polinomio *p, Polinomio *q) {
@@ -216,6 +219,7 @@ int esIgualPolinomio(Polinomio *p, Polinomio *q) {
 void imprimePolinomio(Polinomio *p) {
 	simplifica(p);
 	imprimeL(p->cab, imprimeTermino);
+	printf("Grado: %d\n", p->grado);
 }
 
 Polinomio *copiaPolinomio(Polinomio *p) {
@@ -266,7 +270,7 @@ Polinomio *binomio(Polinomio *p, Polinomio *d) {
 	int n = ter->coefi;
 	int tab[2][n + 1], cnt = 0;
 	for (nvo = p->cab; nvo; nvo = nvo->sig, cnt++);
-	if (cnt != 2) return creaPolinomio(0, p->cab, 1);
+	if (cnt != 2) return creaPolinomio(p->grado, p->cab, 1);
 
 	Termino *ta = (Termino *)p->cab->dato;
 	Termino *tb = (Termino *)p->cab->sig->dato;
@@ -295,7 +299,7 @@ Polinomio *binomio(Polinomio *p, Polinomio *d) {
 		}
 	}
 
-	return creaPolinomio(0, rsp, 1);
+	return creaPolinomio(p->grado * n, rsp, 1);
 }
 
 Polinomio *geometrico(Polinomio *poli) {
@@ -396,10 +400,11 @@ void constpush() {
 	push(d);
 }
 
-void varpush() {
+Inst varpush() {
 	Datun d;
 	d.sim = (Simbolo *)(*pc++);
 	push(d);
+	return (Inst) d.sim;
 }
 
 void suma() {

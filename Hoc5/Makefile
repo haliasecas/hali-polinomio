@@ -5,13 +5,15 @@ all: $(Gram) lex.yy.c polinomio_cal.c
 	@echo Compilado
 
 polinomio_cal.c:
-	@echo "Si esta"
+	@echo Si esta
 
 $(Gram): polinomio_cal.y
 	@bison -d polinomio_cal.y
+	@echo Grammar yes!
 
 lex.yy.c: polinomio_cal.l
 	@flex polinomio_cal.l
+	@echo Lexer yes!
 
 clean:
 	@rm -f *.out lex.yy.c Polinomio
